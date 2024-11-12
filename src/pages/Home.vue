@@ -2,8 +2,9 @@
 <div class="container">
 
   <h1>{{nickname}}'s Todo List</h1>
-  <div class="todo-list" v-for="todo in todos.todos" :key="todo.id">
+  <div class="todo-list" v-for="(todo,index) in todos" :key="todo.id">
     <div class="todo-item">
+      <p>item <span style="color: red; font-weight: bold">{{index + 1 }}</span></p>
       <p>{{todo.id}}</p>
       <p>{{todo.content}}</p>
     </div>
@@ -26,7 +27,7 @@ const router = useRouter();
 // 定義 nickname
 const nickname = ref('');
 // 定義 todos
-const todos = reactive({todos: []});
+const todos = reactive([]);
 
 /**
  * 取得內容
@@ -50,7 +51,7 @@ const getContent = async () => {
   // 取得 nickname
   nickname.value = sessionStorage.getItem('user').split('"')[1];
   // 取得 todos
-  todos.todos = data.todos
+  todos.push(...data.todos)
 }
 
 /**
