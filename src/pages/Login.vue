@@ -19,11 +19,13 @@
  * import function
  */
 import {onMounted, ref} from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import {apiBatch, getToAPI, postToAPI} from '../api/apiV1.js';
 
 // 定義 router
 const router = useRouter();
+// 定義 route
+const route = useRoute();
 // 帳號
 const email = ref('');
 // 密碼
@@ -32,6 +34,7 @@ const password = ref('');
 const nickname = ref( '');
 // 登入失敗 flag
 const loginFail = ref(false);
+
 /**
  * login
  * @return {Promise<void>}
@@ -67,6 +70,10 @@ const login = async () => {
  * @return {void}
  */
 onMounted(async () => {
+  // 利用 route 判斷是否從 signUp 頁面來的
+  if(route.from?.path === '/') {
+    return
+  }
   // 取得 token
   const token = sessionStorage.getItem('token');
   // 取得 nickname
