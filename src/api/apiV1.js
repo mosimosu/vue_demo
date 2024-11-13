@@ -7,6 +7,7 @@ export const apiBatch = {
     postTodos: `${apiPath}/todos`,
     getTodos: `${apiPath}/todos`,
     deleteTodos: `${apiPath}/todos`,
+    check: `${apiPath}/check`
 };
 
 /**
