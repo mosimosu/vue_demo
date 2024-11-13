@@ -18,9 +18,9 @@
 /**
  * import function
  */
-import { ref } from 'vue';
+import {onMounted, ref} from 'vue';
 import { useRouter } from 'vue-router';
-import {apiBatch, postToAPI} from '../api/apiV1.js';
+import {apiBatch, getToAPI, postToAPI} from '../api/apiV1.js';
 
 // 定義 router
 const router = useRouter();
@@ -28,6 +28,8 @@ const router = useRouter();
 const email = ref('');
 // 密碼
 const password = ref('');
+// 定義 nickname
+const nickname = ref( '');
 // 登入失敗 flag
 const loginFail = ref(false);
 /**
@@ -59,6 +61,45 @@ const login = async () => {
     }, 3000);
   }
 }
+/**
+ * 確認是否登入
+ * @type {function}
+ * @return {void}
+ */
+onMounted(async () => {
+  // 取得 token
+  const token = sessionStorage.getItem('token');
+  // 取得 nickname
+  nickname.value = sessionStorage.getItem('user');
+
+  // 判斷是否授權
+  try {
+    if(token){
+      // 判斷是否授權 API
+      const res = await getToAPI(apiBatch.check, token)
+
+      // 取得回傳資料
+      const checkRes = await res.json();
+
+      // 如果未授權，跳轉至登入畫面
+      if (checkRes.message === '未授權') {
+        alert('未授權，請重新登入');
+        // 3秒後跳轉至登入畫面
+        setTimeout(() => {
+          router.push('/login')
+        }, 3000);
+      }
+      // 如果授權，跳轉至使用者畫面
+      if (checkRes.message === 'OK!') {
+        // 跳轉至使用者畫面
+        await router.push('/home')
+      }}
+  }catch (error) {
+    // 將錯誤回傳
+    return error;
+  }
+
+})
 
 </script>
 

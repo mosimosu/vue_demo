@@ -25,8 +25,8 @@
 /**
  * import function
  */
-import { ref } from 'vue';
-import {apiBatch, postToAPI} from '../api/apiV1.js';
+import { ref, onMounted } from 'vue';
+import {apiBatch, getToAPI, postToAPI} from '../api/apiV1.js';
 import { useRouter } from 'vue-router';
 
 /**
@@ -48,21 +48,25 @@ const signUpFlag = ref(null);
  * @return {Promise<void>}
  */
 const signUp = async () => {
-  const res = await postToAPI(apiBatch.signUp, {
+  // 傳送 post 請求
+  const res = await postToAPI(apiBatch.signUp,null, {
     user:{
       nickname: nickname.value,
       email: email.value,
       password: password.value,}
 
   });
+
+  // 取得回傳資料
+  const data = await res.json();
   // 根據訊息判斷是否註冊成功
-  if(res.message === '註冊成功') {
+  if(data.message === '註冊成功') {
     // 註冊成功
     signUpFlag.value = 1;
     // 3秒後跳轉至使用者畫面
     setTimeout(() => {
         router.push('/login');}, 3000);
-  }else if(res.error[0] === '電子信箱 已被使用') {
+  }else if(data.error[0] === '電子信箱 已被使用') {
     // 電子信箱已被使用
     signUpFlag.value = 2;
     // 3秒後跳轉至登入畫面
@@ -70,6 +74,41 @@ const signUp = async () => {
         router.push('/login');}, 3000);
   }
 }
+/**
+ * 確認登入
+ * @type {function}
+ * @return {Promise<void>}
+ */
+onMounted(async () => {
+  // 取得 token
+  const token = sessionStorage.getItem('token');
+  try {
+    if(token){
+    // 判斷是否授權
+    const res = await getToAPI(apiBatch.check, token)
+
+    // 取得回傳資料
+    const checkRes = await res.json();
+
+    // 判斷是否授權
+    if (checkRes.message === '未授權') {
+      alert('未授權，請重新登入');
+      setTimeout(() => {
+        router.push('/login')
+      }, 3000);
+    }
+    if (checkRes.message === 'OK!') {
+      // 取得 nickname
+      nickname.value = sessionStorage.getItem('user').split('"')[1];
+      // 跳轉至使用者畫面
+      router.push('/home')
+    }}
+  }catch (error) {
+    // 將錯誤回傳
+    return error;
+  }
+
+})
 </script>
 
 
