@@ -3,11 +3,22 @@
   <h1>Login</h1>
   <label for="email">
     Email
-    <input type="text" name="email" id="email" v-model="email" :keydown.enter="login">
+    <input
+        type="text"
+        name="email"
+        id="email"
+        v-model="email"
+        @keyup.enter="focusPassword" />
   </label>
   <label for="password">
     Password
-    <input type="password" name="password" id="password" v-model="password" :keydown.enter="login">
+    <input
+        type="password"
+        name="password"
+        id="password"
+        v-model="password"
+        @keyup.enter="login"
+        ref="passwordInput" />
   </label>
   <button @click="login">Login</button>
   <p v-show="loginFail">登入失敗，請重新登入</p>
@@ -34,6 +45,13 @@ const password = ref('');
 const nickname = ref( '');
 // 登入失敗 flag
 const loginFail = ref(false);
+// 定義 passwordInput
+const passwordInput = ref(null);
+// 定義 passwordInput focus
+const focusPassword = () => {
+  passwordInput.value.focus();
+}
+
 
 /**
  * login
