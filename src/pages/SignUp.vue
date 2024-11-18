@@ -12,6 +12,10 @@
     Password
     <input type="password" name="password" id="password" v-model="password">
   </label>
+  <label for="passwordCheck">
+    Password Check
+    <input type="password" name="passwordCheck" id="passwordCheck" v-model="passwordCheck" @keyup.enter="signUp">
+    </label>
   <button @click="signUp">Sign up</button>
 
 <!--  v-show 是用來控制畫面顯示與否（css 的 display 來控制），v-if 是用來控制畫面是否存在（是否 render 結點來控制）-->
@@ -38,6 +42,8 @@ const router = useRouter();
 const email = ref('');
 // 使用者密碼
 const password = ref('');
+// 使用者密碼確認
+const passwordCheck = ref('');
 // 使用者暱稱
 const nickname = ref('');
 // 註冊狀態
@@ -48,6 +54,9 @@ const signUpFlag = ref(null);
  * @return {Promise<void>}
  */
 const signUp = async () => {
+  if (password.value !== passwordCheck.value) {
+    alert('密碼不一致');
+    return}
   // 傳送 post 請求
   const res = await postToAPI(apiBatch.signUp,null, {
     user:{
