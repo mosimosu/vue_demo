@@ -15,6 +15,7 @@
 </div>
   <div class="todo-list" v-for="(todo, index) in todos" :key="todo.id">
     <div class="todo-item">
+      <button type="button" @click="()=>finished(todo)">Finished</button>
       <p>item <span style="color: red; font-weight: bold">{{index + 1 }}</span></p>
       <p>{{todo.id}}</p>
       <p v-if="todo.editFlag === false">{{todo.content}}</p>
@@ -152,6 +153,34 @@ const editTodo = async (todo) => {
   const token = sessionStorage.getItem('token');
   // 傳送 post 請求
   const res = await postToAPI({url:apiBatch.postTodos, method:'put', token:token, data:{id:todo.id, todo:{content:todo.content}}});
+  // 取得回傳資料
+  const data = await res.json();
+  // 判斷是否授權
+  if (data.message === '未授權') {
+    alert('未授權，請重新登入');
+    setTimeout(() => {
+      router.push('/login')
+    }, 3000);
+  }
+  // 取得 todos
+  todo.value = '';
+  // 清空 todos
+  todos.length = 0;
+  // 重新取得內容
+  await getContent();
+}
+
+/**
+ * 完成 todo
+ * @param todo {Object}
+ * @returns {Promise<void>}
+ */
+const finished = async (todo) => {
+  console.log(todo)
+  // 取得 token
+  const token = sessionStorage.getItem('token');
+  // 傳送 post 請求
+  const res = await postToAPI({url:apiBatch.postTodos, method:'patch', token:token, data:{id:todo.id}});
   // 取得回傳資料
   const data = await res.json();
   // 判斷是否授權
