@@ -21,13 +21,13 @@ export const apiBatch = {
 export async function postToAPI({url, method = 'post', token = null, data}) {
     try {
         // 使用 fetch 的第二個參數為物件，其中 method 為請求方法，headers 為請求的標頭，body 為請求的內容
-        const response = await fetch(`${url}/${data.id ? `${data.id}` : ''}`, {
+        const response = await fetch(`${url}${data.id ? `/${data.id}` : ''}${method === 'patch' ? '/toggle' : ''}`, {
             method: method,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization':  token ? `Bearer ${token.split(' ')[1]}` : ''
             },
-            body: JSON.stringify(data)
+            body: JSON?.stringify(data)
         });
 
         // 將 response回傳
