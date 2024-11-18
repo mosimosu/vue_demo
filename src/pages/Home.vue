@@ -10,13 +10,18 @@
          @keyup.enter="handleSubmit"
          v-model="todo"
   />
-  <button type="button" @click="handleSubmit">submit</button>
+  <button type="button" @click="handleSubmit">Submit</button>
+
 </div>
-  <div class="todo-list" v-for="(todo,index) in todos" :key="todo.id">
-    <div class="todo-item" @click="() => console.log(todo)">
+  <div class="todo-list" v-for="(todo, index) in todos" :key="todo.id">
+    <div class="todo-item">
       <p>item <span style="color: red; font-weight: bold">{{index + 1 }}</span></p>
       <p>{{todo.id}}</p>
-      <p>{{todo.content}}</p>
+      <p v-if="todo.editFlag === false">{{todo.content}}</p>
+      <input v-if="todo.editFlag === true" type="text" v-model="todo.content" @keyup.enter="()=>editTodo(todo)" @keyup.esc="todo.editFlag = false" />
+      <button type="button" @click="() => deleteTodo(todo)">Delete</button>
+      <button v-if="todo.editFlag === false" type="button" @click="todo.editFlag = true">Edit</button>
+      <button v-if="todo.editFlag === true" type="button" @click="()=> editTodo(todo)">Save</button>
     </div>
   </div>
 
@@ -52,6 +57,9 @@ const getContent = async () => {
   const res = await getToAPI(apiBatch.getTodos,token);
   // 取得回傳資料
   const data = await res.json();
+  // 為 todos 加上 editFlag
+  const todosWithEdit = data.todos.map(todo=>({...todo, editFlag: false}));
+
   // 判斷是否授權
   if (data.message === '未授權') {
     alert('未授權，請重新登入');
@@ -63,7 +71,7 @@ const getContent = async () => {
   // 取得 nickname
   nickname.value = sessionStorage.getItem('user').split('"')[1];
   // 取得 todos
-  todos.push(...data.todos.reverse());
+  todos.push(...todosWithEdit.reverse());
 }
 
 /**
@@ -85,8 +93,12 @@ const addTodo = async () => {
   // 取得 token
   const token = sessionStorage.getItem('token');
   // 傳送 post 請求
-  const res = await postToAPI(apiBatch.postTodos,token,{
-    todo:{content: todo.value}
+  const res = await postToAPI({url:apiBatch.postTodos, token:token, data:
+  {
+    todo:{
+      content: todo.value
+    }
+  }
   });
   // 取得回傳資料
   const data = await res.json();
@@ -104,10 +116,64 @@ const addTodo = async () => {
 }
 
 /**
+ * 刪除 todo
+ * @param todo {Object}
+ * @returns {Promise<void>}
+ */
+const deleteTodo = async (todo) => {
+  // 取得 token
+  const token = sessionStorage.getItem('token');
+  // 傳送 post 請求
+  const res = await postToAPI({url:apiBatch.deleteTodos, method:'delete', token:token, data:{id:todo.id}});
+  // 取得回傳資料
+  const data = await res.json();
+  // 判斷是否授權
+  if (data.message === '未授權') {
+    alert('未授權，請重新登入');
+    setTimeout(() => {
+      router.push('/login')
+    }, 3000);
+  }
+  // 取得 todos
+  todo.value = '';
+  // 清空 todos
+  todos.length = 0;
+  // 重新取得內容
+  getContent();
+}
+
+/**
+ * 編輯 todo
+ * @param todo {Object}
+ * @returns {Promise<void>}
+ */
+const editTodo = async (todo) => {
+  // 取得 token
+  const token = sessionStorage.getItem('token');
+  // 傳送 post 請求
+  const res = await postToAPI({url:apiBatch.postTodos, method:'put', token:token, data:{id:todo.id, todo:{content:todo.content}}});
+  // 取得回傳資料
+  const data = await res.json();
+  // 判斷是否授權
+  if (data.message === '未授權') {
+    alert('未授權，請重新登入');
+    setTimeout(() => {
+      router.push('/login')
+    }, 3000);
+  }
+  // 取得 todos
+  todo.value = '';
+  // 清空 todos
+  todos.length = 0;
+  // 重新取得內容
+  await getContent();
+}
+
+/**
  * 新增 todo 並取得內容
  * @return {Promise<void>}
  */
-const handleSubmit = async () => {
+const handleSubmit = async (todo) => {
   await addTodo();
   await getContent();
 }
