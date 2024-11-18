@@ -13,15 +13,16 @@ export const apiBatch = {
 /**
  * 傳送post請求
  * @param url {String}
+ * @param method {String}
  * @param token {String || null}
  * @param data {Object}
  * @return {Promise<*>}
  */
-export async function postToAPI(url,token = null, data) {
+export async function postToAPI({url, method = 'post', token = null, data}) {
     try {
         // 使用 fetch 的第二個參數為物件，其中 method 為請求方法，headers 為請求的標頭，body 為請求的內容
-        const response = await fetch(url, {
-            method: 'POST',
+        const response = await fetch(`${url}/${data.id ? `${data.id}` : ''}`, {
+            method: method,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization':  token ? `Bearer ${token.split(' ')[1]}` : ''
