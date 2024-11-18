@@ -139,7 +139,7 @@ const deleteTodo = async (todo) => {
   // 清空 todos
   todos.length = 0;
   // 重新取得內容
-  getContent();
+  await getContent();
 }
 
 /**
@@ -173,7 +173,7 @@ const editTodo = async (todo) => {
  * 新增 todo 並取得內容
  * @return {Promise<void>}
  */
-const handleSubmit = async (todo) => {
+const handleSubmit = async () => {
   await addTodo();
   await getContent();
 }
