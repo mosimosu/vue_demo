@@ -58,12 +58,12 @@ const focusPassword = () => {
  * @return {Promise<void>}
  */
 const login = async () => {
-  const res = await postToAPI(apiBatch.login,null, {
+  const res = await postToAPI({url:apiBatch.login, token:null,method:'post', data:{
     user:{
       email: email.value,
       password: password.value
     }
-  });
+  }});
   // 取得 token
   const token = res.headers.get('Authorization')
   // 將 token 存到 sessionStorage

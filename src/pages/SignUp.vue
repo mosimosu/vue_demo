@@ -58,13 +58,13 @@ const signUp = async () => {
     alert('密碼不一致');
     return}
   // 傳送 post 請求
-  const res = await postToAPI(apiBatch.signUp,null, {
+  const res = await postToAPI({url:apiBatch.signUp, token: null, method:'post', data:{
     user:{
       nickname: nickname.value,
       email: email.value,
       password: password.value,}
 
-  });
+  }});
 
   // 取得回傳資料
   const data = await res.json();
