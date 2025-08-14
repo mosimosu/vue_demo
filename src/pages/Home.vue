@@ -1,33 +1,89 @@
 <template>
-<div class="container">
-<div class="header">
-  <h1>{{nickname}}'s Todo List</h1> <button type="button" @click="logout">Logout</button>
-</div>
-<div class="add-todo">
-  <label for="todo">Input</label>
-  <input id="todo" type="text"
-         @input="adjustWidth"
-         @keyup.enter="handleSubmit"
-         v-model="todo"
-  />
-  <button type="button" @click="handleSubmit">Submit</button>
-
-</div>
-  <div class="todo-list" v-for="(todo, index) in todos" :key="todo.id">
-    <div class="todo-item">
-      <button type="button" @click="()=>finished(todo)">Finished</button>
-      <p>item <span style="color: red; font-weight: bold">{{index + 1 }}</span></p>
-      <p>{{todo.id}}</p>
-      <p v-if="todo.editFlag === false">{{todo.content}}</p>
-      <input v-if="todo.editFlag === true" type="text" v-model="todo.content" @keyup.enter="()=>editTodo(todo)" @keyup.esc="todo.editFlag = false" />
-      <button type="button" @click="() => deleteTodo(todo)">Delete</button>
-      <button v-if="todo.editFlag === false" type="button" @click="todo.editFlag = true">Edit</button>
-      <button v-if="todo.editFlag === true" type="button" @click="()=> editTodo(todo)">Save</button>
-    </div>
-  </div>
-
-</div>
-
+  <v-container class="py-8">
+    <v-row justify="center" class="w-100">
+      <v-col cols="12" md="12" lg="12" xl="12">
+        <v-card class="mb-6">
+          <v-card-title>
+            <v-row align="center" justify="space-between" class="w-100 pa-4">
+              <span class="text-h5">{{ nickname }}'s Todo List</span>
+              <v-btn color="error" @click="logout" size="small">Logout</v-btn>
+            </v-row>
+          </v-card-title>
+        </v-card>
+        <v-card class="mb-6">
+          <v-card-text>
+            <v-form @submit.prevent="handleSubmit">
+              <v-row align="center">
+                <v-col>
+                  <v-text-field
+                      label="Add a new todo"
+                      v-model="todo"
+                      @input="adjustWidth"
+                      outlined
+                  />
+                </v-col>
+                <v-col cols="auto">
+                  <v-btn color="primary" type="submit">Add</v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-card-text>
+        </v-card>
+        <v-row>
+          <v-col
+              v-for="(todo, index) in todos"
+              :key="todo.id"
+              cols="12"
+              sm="6"
+              md="6"
+              lg="4"
+          >
+            <v-card>
+              <v-card-title class="pa-6">
+                <v-row align="center">
+                  <span>Item <span style="color: red; font-weight: bold">{{ index + 1 }}</span></span>
+                  <v-spacer/>
+                  <v-btn icon color="success" @click="() => finished(todo)" size="small" class="mr-1">
+                    <v-icon>mdi-check</v-icon>
+                  </v-btn>
+                  <v-btn icon color="error" @click="() => deleteTodo(todo)" size="small">
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </v-row>
+              </v-card-title>
+              <v-card-text>
+                <div v-if="!todo.editFlag">{{ todo.content }}</div>
+                <v-text-field
+                    v-if="todo.editFlag"
+                    v-model="todo.content"
+                    @keyup.enter="() => editTodo(todo)"
+                    @keyup.esc="todo.editFlag = false"
+                    outlined
+                    dense
+                />
+              </v-card-text>
+              <v-card-actions>
+                <v-btn
+                    v-if="!todo.editFlag"
+                    color="info"
+                    @click="todo.editFlag = true"
+                    size="small"
+                >Edit
+                </v-btn>
+                <v-btn
+                    v-if="todo.editFlag"
+                    color="primary"
+                    @click="() => editTodo(todo)"
+                    size="small"
+                >Save
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup>
@@ -55,11 +111,11 @@ const getContent = async () => {
   // 取得 token
   const token = sessionStorage.getItem('token');
   // 傳送 get 請求
-  const res = await getToAPI(apiBatch.getTodos,token);
+  const res = await getToAPI(apiBatch.getTodos, token);
   // 取得回傳資料
   const data = await res.json();
   // 為 todos 加上 editFlag
-  const todosWithEdit = data.todos.map(todo=>({...todo, editFlag: false}));
+  const todosWithEdit = data.todos.map(todo => ({...todo, editFlag: false}));
 
   // 判斷是否授權
   if (data.message === '未授權') {
@@ -94,12 +150,13 @@ const addTodo = async () => {
   // 取得 token
   const token = sessionStorage.getItem('token');
   // 傳送 post 請求
-  const res = await postToAPI({url:apiBatch.postTodos, token:token, data:
-  {
-    todo:{
-      content: todo.value
-    }
-  }
+  const res = await postToAPI({
+    url: apiBatch.postTodos, token: token, data:
+        {
+          todo: {
+            content: todo.value
+          }
+        }
   });
   // 取得回傳資料
   const data = await res.json();
@@ -125,7 +182,7 @@ const deleteTodo = async (todo) => {
   // 取得 token
   const token = sessionStorage.getItem('token');
   // 傳送 post 請求
-  const res = await postToAPI({url:apiBatch.deleteTodos, method:'delete', token:token, data:{id:todo.id}});
+  const res = await postToAPI({url: apiBatch.deleteTodos, method: 'delete', token: token, data: {id: todo.id}});
   // 取得回傳資料
   const data = await res.json();
   // 判斷是否授權
@@ -152,7 +209,12 @@ const editTodo = async (todo) => {
   // 取得 token
   const token = sessionStorage.getItem('token');
   // 傳送 post 請求
-  const res = await postToAPI({url:apiBatch.postTodos, method:'put', token:token, data:{id:todo.id, todo:{content:todo.content}}});
+  const res = await postToAPI({
+    url: apiBatch.postTodos,
+    method: 'put',
+    token: token,
+    data: {id: todo.id, todo: {content: todo.content}}
+  });
   // 取得回傳資料
   const data = await res.json();
   // 判斷是否授權
@@ -180,7 +242,7 @@ const finished = async (todo) => {
   // 取得 token
   const token = sessionStorage.getItem('token');
   // 傳送 post 請求
-  const res = await postToAPI({url:apiBatch.postTodos, method:'patch', token:token, data:{id:todo.id}});
+  const res = await postToAPI({url: apiBatch.postTodos, method: 'patch', token: token, data: {id: todo.id}});
   // 取得回傳資料
   const data = await res.json();
   // 判斷是否授權
@@ -245,7 +307,7 @@ onMounted(async () => {
   // 取得 token
   const token = sessionStorage.getItem('token');
   try {
-    if(token){
+    if (token) {
       // 判斷是否授權
       const res = await getToAPI(apiBatch.check, token)
 
@@ -264,8 +326,9 @@ onMounted(async () => {
         nickname.value = sessionStorage.getItem('user').split('"')[1];
         // 跳轉至使用者畫面
         await router.push('/home')
-      }}
-  }catch (error) {
+      }
+    }
+  } catch (error) {
     // 將錯誤回傳
     return error;
   }
@@ -276,65 +339,5 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.container {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
 
-.header {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 1rem;
-  border: 1px solid #000;
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.add-todo {
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid #000;
-  gap: 1rem;
-  padding: 1rem;
-  & > label {
-    font-size: 1.5rem;
-  }
-  & > input {
-    min-width: 300px;
-    resize: horizontal;
-    border: 1px solid #000;
-    padding: 0.5rem;
-  }
-}
-
-.todo-list {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.todo-item {
-  width: fit-content;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin: 1rem;
-  border: 1px solid #000;
-  gap: 1rem;
-  padding: 1rem;
-}
 </style>
