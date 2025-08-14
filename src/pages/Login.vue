@@ -1,28 +1,43 @@
 <template>
-<div>
-  <h1>Login</h1>
-  <label for="email">
-    Email
-    <input
-        type="text"
-        name="email"
-        id="email"
-        v-model="email"
-        @keyup.enter="focusPassword" />
-  </label>
-  <label for="password">
-    Password
-    <input
-        type="password"
-        name="password"
-        id="password"
-        v-model="password"
-        @keyup.enter="login"
-        ref="passwordInput" />
-  </label>
-  <button @click="login">Login</button>
-  <p v-show="loginFail">登入失敗，請重新登入</p>
-</div>
+  <v-container class="fill-height">
+    <v-row justify="center" align="center">
+      <v-col cols="12" sm="=12" md="8" lg="8" xl="8">
+        <v-card>
+          <v-card-title>
+            <span class="text-h5">Login</span>
+          </v-card-title>
+          <v-card-text>
+            <v-text-field
+                label="Email"
+                v-model="email"
+                @keyup.enter="focusPassword"
+                type="text"
+                name="email"
+                id="email"
+            />
+            <v-text-field
+                label="Password"
+                v-model="password"
+                @keyup.enter="login"
+                type="password"
+                name="password"
+                id="password"
+                ref="passwordInput"
+            />
+            <v-btn color="primary" @click="login" block>Login</v-btn>
+            <v-alert
+                v-show="loginFail"
+                type="error"
+                dismissible
+                class="mt-3"
+            >
+              登入失敗，請重新登入
+            </v-alert>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup>
