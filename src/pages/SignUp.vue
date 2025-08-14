@@ -1,37 +1,113 @@
 <template>
-  <h1>Sign Up</h1>
-  <label for="">
-    Nickname
-    <input type="text" name="nickname" id="nickname" v-model="nickname">
-  </label>
-  <label for="email">
-    Email
-    <input type="text" name="email" id="email" v-model="email">
-  </label>
-  <label for="password">
-    Password
-    <input type="password" name="password" id="password" v-model="password">
-  </label>
-  <label for="passwordCheck">
-    Password Check
-    <input type="password" name="passwordCheck" id="passwordCheck" v-model="passwordCheck" @keyup.enter="signUp">
-    </label>
-  <button @click="signUp">Sign up</button>
+  <!--  <h1>Sign Up</h1>-->
+  <!--  <label for="">-->
+  <!--    Nickname-->
+  <!--    <input type="text" name="nickname" id="nickname" v-model="nickname">-->
+  <!--  </label>-->
+  <!--  <label for="email">-->
+  <!--    Email-->
+  <!--    <input type="text" name="email" id="email" v-model="email">-->
+  <!--  </label>-->
+  <!--  <label for="password">-->
+  <!--    Password-->
+  <!--    <input type="password" name="password" id="password" v-model="password">-->
+  <!--  </label>-->
+  <!--  <label for="passwordCheck">-->
+  <!--    Password Check-->
+  <!--    <input type="password" name="passwordCheck" id="passwordCheck" v-model="passwordCheck" @keyup.enter="signUp">-->
+  <!--    </label>-->
+  <!--  <button @click="signUp">Sign up</button>-->
 
-<!--  v-show 是用來控制畫面顯示與否（css 的 display 來控制），v-if 是用來控制畫面是否存在（是否 render 結點來控制）-->
-  <div v-show="signUpFlag !== null">
-    <h2 v-if="signUpFlag === 2">您的電子信箱已經註冊，將自動跳轉至登入畫面</h2>
-    <h2 v-if="signUpFlag === 1">註冊完成，將自動跳轉至使用者畫面</h2>
-  </div>
+  <!--&lt;!&ndash;  v-show 是用來控制畫面顯示與否（css 的 display 來控制），v-if 是用來控制畫面是否存在（是否 render 結點來控制）&ndash;&gt;-->
+  <!--  <div v-show="signUpFlag !== null">-->
+  <!--    <h2 v-if="signUpFlag === 2">您的電子信箱已經註冊，將自動跳轉至登入畫面</h2>-->
+  <!--    <h2 v-if="signUpFlag === 1">註冊完成，將自動跳轉至使用者畫面</h2>-->
+  <!--  </div>-->
+  <v-container class="fill-height">
+    <v-row align="center" justify="center">
+      <v-col cols="12" sm="=12" md="8" lg="8" xl="8">
+        <v-card>
+          <v-card-title>
+            <span class="text-h5">Sign Up</span>
+          </v-card-title>
+          <v-card-text>
+            <v-form @submit.prevent="signUp">
+              <v-text-field
+                  label="Nickname"
+                  v-model="nickname"
+                  name="nickname"
+                  id="nickname"
+                  outlined
+                  class="mb-3"
+              />
+              <v-text-field
+                  label="Email"
+                  v-model="email"
+                  name="email"
+                  id="email"
+                  type="email"
+                  outlined
+                  class="mb-3"
+              />
+              <v-text-field
+                  label="Password"
+                  v-model="password"
+                  name="password"
+                  id="password"
+                  type="password"
+                  outlined
+                  class="mb-3"
+              />
+              <v-text-field
+                  label="Password Check"
+                  v-model="passwordCheck"
+                  name="passwordCheck"
+                  id="passwordCheck"
+                  type="password"
+                  outlined
+                  class="mb-3"
+                  @keyup.enter="signUp"
+              />
+              <v-btn color="primary" type="submit" block>Sign Up</v-btn>
+            </v-form>
+            <v-alert
+                v-show="signUpFlag === 2"
+                type="error"
+                dismissible
+                class="mt-3"
+            >
+              Your email is already registered. Redirecting to login...
+            </v-alert>
+            <v-alert
+                v-show="signUpFlag === 1"
+                type="success"
+                dismissible
+                class="mt-3"
+            >
+              Registration successful. Redirecting to user page...
+            </v-alert>
+            <v-alert
+                v-show="passwordMismatch"
+                type="error"
+                dismissible
+                class="mt-3"
+            >
+              Your passwords do not match. Please try again.
+            </v-alert>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup>
 /**
  * import function
  */
-import { ref, onMounted } from 'vue';
+import {ref, onMounted} from 'vue';
 import {apiBatch, getToAPI, postToAPI} from '../api/apiV1.js';
-import { useRouter } from 'vue-router';
+import {useRouter} from 'vue-router';
 
 /**
  * 定義變數
@@ -48,6 +124,8 @@ const passwordCheck = ref('');
 const nickname = ref('');
 // 註冊狀態
 const signUpFlag = ref(null);
+// 密碼不一致
+const passwordMismatch = ref(false);
 
 /**
  * 註冊功能
@@ -55,32 +133,38 @@ const signUpFlag = ref(null);
  */
 const signUp = async () => {
   if (password.value !== passwordCheck.value) {
-    alert('密碼不一致');
-    return}
+    passwordMismatch.value = true;
+    return
+  }
   // 傳送 post 請求
-  const res = await postToAPI({url:apiBatch.signUp, token: null, method:'post', data:{
-    user:{
-      nickname: nickname.value,
-      email: email.value,
-      password: password.value,}
+  const res = await postToAPI({
+    url: apiBatch.signUp, token: null, method: 'post', data: {
+      user: {
+        nickname: nickname.value,
+        email: email.value,
+        password: password.value,
+      }
 
-  }});
+    }
+  });
 
   // 取得回傳資料
   const data = await res.json();
   // 根據訊息判斷是否註冊成功
-  if(data.message === '註冊成功') {
+  if (data.message === '註冊成功') {
     // 註冊成功
     signUpFlag.value = 1;
     // 3秒後跳轉至使用者畫面
     setTimeout(() => {
-        router.push('/login');}, 3000);
-  }else if(data.error[0] === '電子信箱 已被使用') {
+      router.push('/login');
+    }, 3000);
+  } else if (data.error[0] === '電子信箱 已被使用') {
     // 電子信箱已被使用
     signUpFlag.value = 2;
     // 3秒後跳轉至登入畫面
     setTimeout(() => {
-        router.push('/login');}, 3000);
+      router.push('/login');
+    }, 3000);
   }
 }
 /**
@@ -92,27 +176,28 @@ onMounted(async () => {
   // 取得 token
   const token = sessionStorage.getItem('token');
   try {
-    if(token){
-    // 判斷是否授權
-    const res = await getToAPI(apiBatch.check, token)
+    if (token) {
+      // 判斷是否授權
+      const res = await getToAPI(apiBatch.check, token)
 
-    // 取得回傳資料
-    const checkRes = await res.json();
+      // 取得回傳資料
+      const checkRes = await res.json();
 
-    // 判斷是否授權
-    if (checkRes.message === '未授權') {
-      alert('未授權，請重新登入');
-      setTimeout(() => {
-        router.push('/login')
-      }, 3000);
+      // 判斷是否授權
+      if (checkRes.message === '未授權') {
+        alert('未授權，請重新登入');
+        setTimeout(() => {
+          router.push('/login')
+        }, 3000);
+      }
+      if (checkRes.message === 'OK!') {
+        // 取得 nickname
+        nickname.value = sessionStorage.getItem('user').split('"')[1];
+        // 跳轉至使用者畫面
+        router.push('/home')
+      }
     }
-    if (checkRes.message === 'OK!') {
-      // 取得 nickname
-      nickname.value = sessionStorage.getItem('user').split('"')[1];
-      // 跳轉至使用者畫面
-      router.push('/home')
-    }}
-  }catch (error) {
+  } catch (error) {
     // 將錯誤回傳
     return error;
   }
