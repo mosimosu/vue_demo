@@ -1,30 +1,32 @@
 <template>
   <v-container class="fill-height">
     <v-row justify="center" align="center">
-      <v-col cols="12" sm="=12" md="8" lg="8" xl="8">
+      <v-col cols="12" sm="12" md="8" lg="8" xl="8">
         <v-card>
           <v-card-title>
             <span class="text-h5">Login</span>
           </v-card-title>
           <v-card-text>
-            <v-text-field
-                label="Email"
-                v-model="email"
-                @keyup.enter="focusPassword"
-                type="text"
-                name="email"
-                id="email"
-            />
-            <v-text-field
-                label="Password"
-                v-model="password"
-                @keyup.enter="login"
-                type="password"
-                name="password"
-                id="password"
-                ref="passwordInput"
-            />
-            <v-btn color="primary" @click="login" block>Login</v-btn>
+            <v-form @submit.prevent="login">
+              <v-text-field
+                  label="Email"
+                  v-model="email"
+                  @keyup.enter="focusPassword"
+                  type="text"
+                  name="email"
+                  id="email"
+              />
+              <v-text-field
+                  label="Password"
+                  v-model="password"
+                  @keyup.enter="login"
+                  type="password"
+                  name="password"
+                  id="password"
+                  ref="passwordInput"
+              />
+              <v-btn color="primary" type="submit" block>Login</v-btn>
+            </v-form>
             <v-alert
                 v-show="loginFail"
                 type="error"
