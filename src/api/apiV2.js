@@ -26,6 +26,9 @@ api.interceptors.request.use(config => {
 
 const requestToAPI = async (method, url, data = null) => {
     try {
+        if (method === 'get') {
+            return await api.get(url, data ? { params: data } : undefined);
+        }
         return await api[method](url, data);
     } catch (error) {
         // Standardize error response
