@@ -11,7 +11,7 @@ export function useTodos(options = {}) {
     });
 }
 
-// Add todo
+// Add
 export function useAddTodo(options = {}) {
     const queryClient = useQueryClient();
     return useMutation({
@@ -21,7 +21,7 @@ export function useAddTodo(options = {}) {
     });
 }
 
-// Edit todo
+// Edit
 export function useEditTodo(options = {}) {
     const queryClient = useQueryClient();
     return useMutation({
@@ -31,7 +31,7 @@ export function useEditTodo(options = {}) {
     });
 }
 
-// Delete todo
+// Delete
 export function useDeleteTodo(options = {}) {
     const queryClient = useQueryClient();
     return useMutation({
@@ -41,7 +41,7 @@ export function useDeleteTodo(options = {}) {
     });
 }
 
-// Toggle/finish todo
+// Toggle/finish
 export function useToggleTodo(options = {}) {
     const queryClient = useQueryClient();
     return useMutation({
