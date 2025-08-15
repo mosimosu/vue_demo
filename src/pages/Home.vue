@@ -18,7 +18,6 @@
                   <v-text-field
                       label="Add a new todo"
                       v-model="todo"
-                      @input="adjustWidth"
                       outlined
                   />
                 </v-col>
@@ -31,8 +30,8 @@
         </v-card>
         <v-row>
           <v-col
-              v-for="(todo, index) in todos"
-              :key="todo.id"
+              v-for="(item, index) in todosWithEdit"
+              :key="item.id"
               cols="12"
               sm="6"
               md="6"
@@ -42,38 +41,41 @@
               <v-card-title class="pa-6">
                 <v-row align="center">
                   <span>Item <span style="color: red; font-weight: bold">{{ index + 1 }}</span></span>
+                  <span v-if="item.completed_at" class="ml-2">
+  <v-chip color="success" size="small" label>Finished</v-chip>
+</span>
                   <v-spacer/>
-                  <v-btn icon color="success" @click="() => finished(todo)" size="small" class="mr-1">
+                  <v-btn icon color="success" @click="() => finished(item)" size="small" class="mr-1">
                     <v-icon>mdi-check</v-icon>
                   </v-btn>
-                  <v-btn icon color="error" @click="() => deleteTodo(todo)" size="small">
+                  <v-btn icon color="error" @click="() => deleteTodo(item)" size="small">
                     <v-icon>mdi-delete</v-icon>
                   </v-btn>
                 </v-row>
               </v-card-title>
               <v-card-text>
-                <div v-if="!todo.editFlag">{{ todo.content }}</div>
+                <div v-if="!item.editFlag" :style="item.completed_at ? 'text-decoration: line-through; color: #888;' : ''">{{ item.content }}</div>
                 <v-text-field
-                    v-if="todo.editFlag"
-                    v-model="todo.content"
-                    @keyup.enter="() => editTodo(todo)"
-                    @keyup.esc="todo.editFlag = false"
+                    v-if="item.editFlag"
+                    v-model="item.content"
+                    @keyup.enter="() => editTodo(item)"
+                    @keyup.esc="setEditFlag(item.id, false)"
                     outlined
                     dense
                 />
               </v-card-text>
               <v-card-actions>
                 <v-btn
-                    v-if="!todo.editFlag"
+                    v-if="!item.editFlag"
                     color="info"
-                    @click="todo.editFlag = true"
+                    @click="() => setEditFlag(item.id, true)"
                     size="small"
                 >Edit
                 </v-btn>
                 <v-btn
-                    v-if="todo.editFlag"
+                    v-if="item.editFlag"
                     color="primary"
-                    @click="() => editTodo(todo)"
+                    @click="() => editTodo(item)"
                     size="small"
                 >Save
                 </v-btn>
@@ -90,46 +92,46 @@
 /**
  * import function
  */
-import {reactive, ref, onMounted} from "vue";
+import {ref, onMounted, computed} from "vue";
 import {useRouter} from "vue-router";
-import {apiBatch, getToAPI, postToAPI} from "../api/apiV1.js";
+import {useTodos, useAddTodo, useEditTodo, useDeleteTodo, useToggleTodo} from "../api/queries/todos";
 
 // 定義 router
 const router = useRouter();
 // 定義 nickname
 const nickname = ref('');
-// 定義 todos
-const todos = reactive([]);
-// 定義 todo
+// 定義 todoList
 const todo = ref('');
+// 依 id 記錄 editFlag
+const editFlags = ref({});
 
-/**
- * 取得內容
- * @return {Promise<void>}
- */
-const getContent = async () => {
-  // 取得 token
-  const token = sessionStorage.getItem('token');
-  // 傳送 get 請求
-  const res = await getToAPI(apiBatch.getTodos, token);
-  // 取得回傳資料
-  const data = await res.json();
-  // 為 todos 加上 editFlag
-  const todosWithEdit = data.todos.map(todo => ({...todo, editFlag: false}));
+// API hooks
+const {data: todosData, refetch: refetchTodos} = useTodos();
+const {mutate: addTodoMutate} = useAddTodo();
+const {mutate: editTodoMutate} = useEditTodo();
+const {mutate: deleteTodoMutate} = useDeleteTodo();
+const {mutate: toggleTodoMutate} = useToggleTodo();
 
-  // 判斷是否授權
-  if (data.message === '未授權') {
-    alert('未授權，請重新登入');
-    setTimeout(() => {
-      router.push('/login')
-    }, 3000);
-  }
+// Local editFlag state
+const todosWithEdit = computed(() => {
+  if (!todosData.value) return [];
+  return todosData.value.todos
+      .map(t => ({
+        ...t,
+        editFlag: !!editFlags.value[t.id]
+      }))
+      .reverse();
+});
 
-  // 取得 nickname
-  nickname.value = sessionStorage.getItem('user').split('"')[1];
-  // 取得 todos
-  todos.push(...todosWithEdit.reverse());
-}
+const setEditFlag = (id, value) => {
+  editFlags.value[id] = value;
+};
+
+// Sync nickname from sessionStorage
+onMounted(() => {
+  const user = sessionStorage.getItem('user');
+  nickname.value = user ? JSON.parse(user) : '';
+});
 
 /**
  * 登出
@@ -142,198 +144,71 @@ const logout = () => {
   router.push('/login');
 }
 
-/**
- * 新增 todo
- * @returns {Promise<void>}
- */
-const addTodo = async () => {
-  // 取得 token
-  const token = sessionStorage.getItem('token');
-  // 傳送 post 請求
-  const res = await postToAPI({
-    url: apiBatch.postTodos, token: token, data:
-        {
-          todo: {
-            content: todo.value
-          }
+// Delete
+const deleteTodo = (item) => {
+  deleteTodoMutate(
+      item,
+      {
+        onSuccess: () => {
+          refetchTodos();
+        },
+        onError: () => {
+          alert('Unauthorized, please login again');
+          setTimeout(() => router.push('/login'), 3000);
         }
-  });
-  // 取得回傳資料
-  const data = await res.json();
-  // 判斷是否授權
-  if (data.message === '未授權') {
-    alert('未授權，請重新登入');
-    setTimeout(() => {
-      router.push('/login')
-    }, 3000);
-  }
-  // 取得 todos
-  todo.value = '';
-  // 清空 todos
-  todos.length = 0;
-}
-
-/**
- * 刪除 todo
- * @param todo {Object}
- * @returns {Promise<void>}
- */
-const deleteTodo = async (todo) => {
-  // 取得 token
-  const token = sessionStorage.getItem('token');
-  // 傳送 post 請求
-  const res = await postToAPI({url: apiBatch.deleteTodos, method: 'delete', token: token, data: {id: todo.id}});
-  // 取得回傳資料
-  const data = await res.json();
-  // 判斷是否授權
-  if (data.message === '未授權') {
-    alert('未授權，請重新登入');
-    setTimeout(() => {
-      router.push('/login')
-    }, 3000);
-  }
-  // 取得 todos
-  todo.value = '';
-  // 清空 todos
-  todos.length = 0;
-  // 重新取得內容
-  await getContent();
-}
-
-/**
- * 編輯 todo
- * @param todo {Object}
- * @returns {Promise<void>}
- */
-const editTodo = async (todo) => {
-  // 取得 token
-  const token = sessionStorage.getItem('token');
-  // 傳送 post 請求
-  const res = await postToAPI({
-    url: apiBatch.postTodos,
-    method: 'put',
-    token: token,
-    data: {id: todo.id, todo: {content: todo.content}}
-  });
-  // 取得回傳資料
-  const data = await res.json();
-  // 判斷是否授權
-  if (data.message === '未授權') {
-    alert('未授權，請重新登入');
-    setTimeout(() => {
-      router.push('/login')
-    }, 3000);
-  }
-  // 取得 todos
-  todo.value = '';
-  // 清空 todos
-  todos.length = 0;
-  // 重新取得內容
-  await getContent();
-}
-
-/**
- * 完成 todo
- * @param todo {Object}
- * @returns {Promise<void>}
- */
-const finished = async (todo) => {
-  console.log(todo)
-  // 取得 token
-  const token = sessionStorage.getItem('token');
-  // 傳送 post 請求
-  const res = await postToAPI({url: apiBatch.postTodos, method: 'patch', token: token, data: {id: todo.id}});
-  // 取得回傳資料
-  const data = await res.json();
-  // 判斷是否授權
-  if (data.message === '未授權') {
-    alert('未授權，請重新登入');
-    setTimeout(() => {
-      router.push('/login')
-    }, 3000);
-  }
-  // 取得 todos
-  todo.value = '';
-  // 清空 todos
-  todos.length = 0;
-  // 重新取得內容
-  await getContent();
-}
-
-/**
- * 新增 todo 並取得內容
- * @return {Promise<void>}
- */
-const handleSubmit = async () => {
-  await addTodo();
-  await getContent();
-}
-
-/**
- * 調整輸入框寬度
- * @param e {Event}
- * @return {void}
- */
-const adjustWidth = (e) => {
-  const input = e.target;
-  const span = document.createElement('span');
-  span.style.visibility = 'hidden';
-  span.style.position = 'absolute';
-  span.style.whiteSpace = 'pre';
-  span.style.font = window.getComputedStyle(input).font;
-  span.textContent = input.value;
-  document.body.appendChild(span);
-
-  // 移除之前額外加入的 4px
-  input.style.width = `${span.offsetWidth}px`;
-  document.body.removeChild(span);
-}
-
-/**
- * 取得並渲染內容
- * @type {function}
- * @return {void}
- */
-onMounted(() => {
-  getContent()
-})
-
-/**
- * 確認登入
- * @type {function}
- * @return {Promise<void>}
- */
-onMounted(async () => {
-  // 取得 token
-  const token = sessionStorage.getItem('token');
-  try {
-    if (token) {
-      // 判斷是否授權
-      const res = await getToAPI(apiBatch.check, token)
-
-      // 取得回傳資料
-      const checkRes = await res.json();
-
-      // 判斷是否授權
-      if (checkRes.message === '未授權') {
-        alert('未授權，請重新登入');
-        setTimeout(() => {
-          router.push('/login')
-        }, 3000);
       }
-      if (checkRes.message === 'OK!') {
-        // 取得 nickname
-        nickname.value = sessionStorage.getItem('user').split('"')[1];
-        // 跳轉至使用者畫面
-        await router.push('/home')
-      }
-    }
-  } catch (error) {
-    // 將錯誤回傳
-    return error;
-  }
+  );
+};
 
-})
+// Edit
+const editTodo = (item) => {
+  editTodoMutate(
+      item,
+      {
+        onSuccess: () => {
+          setEditFlag(item.id, false);
+          refetchTodos();
+        },
+        onError: () => {
+          alert('Unauthorized, please login again');
+          setTimeout(() => router.push('/login'), 3000);
+        }
+      }
+  );
+};
+
+// Finish
+const finished = (item) => {
+  toggleTodoMutate(
+      item,
+      {
+        onSuccess: () => {
+          refetchTodos();
+        },
+        onError: () => {
+          alert('Unauthorized, please login again');
+          setTimeout(() => router.push('/login'), 3000);
+        }
+      }
+  );
+};
+
+// Add
+const handleSubmit = () => {
+  addTodoMutate(
+      {content: todo.value},
+      {
+        onSuccess: () => {
+          todo.value = '';
+          refetchTodos();
+        },
+        onError: (err) => {
+          alert('Unauthorized, please login again');
+          setTimeout(() => router.push('/login'), 3000);
+        }
+      }
+  );
+};
 
 
 </script>
