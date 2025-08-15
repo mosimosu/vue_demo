@@ -48,7 +48,8 @@
  */
 import {onMounted, ref} from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import {apiBatch, getToAPI, postToAPI} from '../api/apiV1.js';
+import { useLogin } from '../api/queries/login';
+// import {apiBatch, getToAPI, postToAPI} from '../api/apiV1.js';
 
 // 定義 router
 const router = useRouter();
@@ -69,79 +70,33 @@ const focusPassword = () => {
   passwordInput.value.focus();
 }
 
+const { mutate: loginMutate } = useLogin({
+  onSuccess: (res) => {
+    const token = res.headers.authorization;
+    sessionStorage.setItem('token', token);
+    const data = res.data;
+    if (data.message === '登入成功') {
+      sessionStorage.setItem('user', JSON.stringify(data.nickname));
+      router.push('/home');
+    } else if (data.message === '登入失敗') {
+      loginFail.value = true;
+      setTimeout(() => { loginFail.value = false; }, 3000);
+    }
+  },
+  onError: () => {
+    loginFail.value = true;
+    setTimeout(() => { loginFail.value = false; }, 3000);
+  }
+});
 
-/**
- * login
- * @return {Promise<void>}
- */
-const login = async () => {
-  const res = await postToAPI({url:apiBatch.login, token:null,method:'post', data:{
-    user:{
+const login = () => {
+  loginMutate({
+    user: {
       email: email.value,
       password: password.value
     }
-  }});
-  // 取得 token
-  const token = res.headers.get('Authorization')
-  // 將 token 存到 sessionStorage
-  sessionStorage.setItem('token', token);
-  // 取得登入成功後的資料
-  const data = await res.json();
-  // 判斷登入成功後的資料
-  if (data.message === '登入成功') {
-    sessionStorage.setItem('user', JSON.stringify(data.nickname));
-    // 登入成功後，跳轉到首頁
-    await router.push('/home')
-  }else if(data.message === '登入失敗'){
-    loginFail.value = true;
-    setTimeout(() => {
-      loginFail.value = false;
-    }, 3000);
-  }
-}
-/**
- * 確認是否登入
- * @type {function}
- * @return {void}
- */
-onMounted(async () => {
-  // 利用 route 判斷是否從 signUp 頁面來的
-  if(route.from?.path === '/') {
-    return
-  }
-  // 取得 token
-  const token = sessionStorage.getItem('token');
-  // 取得 nickname
-  nickname.value = sessionStorage.getItem('user');
-
-  // 判斷是否授權
-  try {
-    if(token){
-      // 判斷是否授權 API
-      const res = await getToAPI(apiBatch.check, token)
-
-      // 取得回傳資料
-      const checkRes = await res.json();
-
-      // 如果未授權，跳轉至登入畫面
-      if (checkRes.message === '未授權') {
-        alert('未授權，請重新登入');
-        // 3秒後跳轉至登入畫面
-        setTimeout(() => {
-          router.push('/login')
-        }, 3000);
-      }
-      // 如果授權，跳轉至使用者畫面
-      if (checkRes.message === 'OK!') {
-        // 跳轉至使用者畫面
-        await router.push('/home')
-      }}
-  }catch (error) {
-    // 將錯誤回傳
-    return error;
-  }
-
-})
+  });
+};
 
 </script>
 
