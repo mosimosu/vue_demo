@@ -1,3 +1,66 @@
+<script setup>
+/**
+ * import function
+ */
+import {ref} from 'vue';
+import {useRouter} from 'vue-router';
+import {useLogin} from '../../api/queries/login.js';
+
+// 定義 router
+const router = useRouter();
+// 帳號
+const email = ref('');
+// 密碼
+const password = ref('');
+// 定義 nickname
+const nickname = ref('');
+// 登入失敗 flag
+const loginFail = ref(false);
+// 定義 passwordInput
+const passwordInput = ref(null);
+// 定義 passwordInput focus
+const focusPassword = () => {
+  passwordInput.value.focus();
+}
+
+const {mutate: loginMutate} = useLogin({
+  onSuccess: (res) => {
+    const token = res.headers.authorization;
+    sessionStorage.setItem('token', token);
+    const data = res.data;
+    if (data.message === '登入成功') {
+      sessionStorage.setItem('user', JSON.stringify(data.nickname));
+      router.push('/home');
+    } else if (data.message === '登入失敗') {
+      loginFail.value = true;
+      setTimeout(() => {
+        loginFail.value = false;
+      }, 3000);
+    }
+  },
+  onError: () => {
+    loginFail.value = true;
+    setTimeout(() => {
+      loginFail.value = false;
+    }, 3000);
+  }
+});
+
+const login = () => {
+  loginMutate({
+    user: {
+      email: email.value,
+      password: password.value
+    }
+  });
+};
+
+const goSignup = () => {
+  router.push('/signup');
+}
+
+</script>
+
 <template>
   <v-container class="fill-height">
     <v-row justify="center" align="center">
@@ -25,7 +88,15 @@
                   id="password"
                   ref="passwordInput"
               />
-              <v-btn color="primary" type="submit" block>Login</v-btn>
+              <v-spacer/>
+              <v-row align="center" justify="center">
+                <v-col cols="auto">
+                  <v-btn color="primary" type="submit">Login</v-btn>
+                </v-col>
+                <v-col cols="auto">
+                  <v-btn color="secondary" type="button" @click="goSignup">Sign Up</v-btn>
+                </v-col>
+              </v-row>
             </v-form>
             <v-alert
                 v-show="loginFail"
@@ -41,64 +112,6 @@
     </v-row>
   </v-container>
 </template>
-
-<script setup>
-/**
- * import function
- */
-import {ref} from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useLogin } from '../../api/queries/login.js';
-// import {apiBatch, getToAPI, postToAPI} from '../api/apiV1.js';
-
-// 定義 router
-const router = useRouter();
-// 定義 route
-const route = useRoute();
-// 帳號
-const email = ref('');
-// 密碼
-const password = ref('');
-// 定義 nickname
-const nickname = ref( '');
-// 登入失敗 flag
-const loginFail = ref(false);
-// 定義 passwordInput
-const passwordInput = ref(null);
-// 定義 passwordInput focus
-const focusPassword = () => {
-  passwordInput.value.focus();
-}
-
-const { mutate: loginMutate } = useLogin({
-  onSuccess: (res) => {
-    const token = res.headers.authorization;
-    sessionStorage.setItem('token', token);
-    const data = res.data;
-    if (data.message === '登入成功') {
-      sessionStorage.setItem('user', JSON.stringify(data.nickname));
-      router.push('/home');
-    } else if (data.message === '登入失敗') {
-      loginFail.value = true;
-      setTimeout(() => { loginFail.value = false; }, 3000);
-    }
-  },
-  onError: () => {
-    loginFail.value = true;
-    setTimeout(() => { loginFail.value = false; }, 3000);
-  }
-});
-
-const login = () => {
-  loginMutate({
-    user: {
-      email: email.value,
-      password: password.value
-    }
-  });
-};
-
-</script>
 
 <style scoped>
 

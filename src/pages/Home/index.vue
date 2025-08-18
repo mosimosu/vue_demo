@@ -53,7 +53,7 @@ const logout = () => {
   // 清除 sessionStorage
   sessionStorage.clear();
   // 導向登入頁
-  router.push('/login');
+  router.push('/');
 }
 
 // Delete
@@ -66,7 +66,7 @@ const deleteTodo = (item) => {
         },
         onError: () => {
           alert('Unauthorized, please login again');
-          setTimeout(() => router.push('/login'), 3000);
+          setTimeout(() => router.push('/'), 3000);
         }
       }
   );
@@ -83,7 +83,7 @@ const editTodo = (item) => {
         },
         onError: () => {
           alert('Unauthorized, please login again');
-          setTimeout(() => router.push('/login'), 3000);
+          setTimeout(() => router.push('/'), 3000);
         }
       }
   );
@@ -99,7 +99,7 @@ const finished = (item) => {
         },
         onError: () => {
           alert('Unauthorized, please login again');
-          setTimeout(() => router.push('/login'), 3000);
+          setTimeout(() => router.push('/'), 3000);
         }
       }
   );
@@ -111,7 +111,7 @@ const handleSubmit = (content) => {
     onSuccess: () => refetchTodos(),
     onError: () => {
       alert('Unauthorized, please login again');
-      setTimeout(() => router.push('/login'), 3000);
+      setTimeout(() => router.push('/'), 3000);
     }
   });
 };

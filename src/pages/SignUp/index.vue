@@ -109,7 +109,7 @@ const {mutate: signUpMutate} = useSignUp({
     if (data.message === '註冊成功') {
       signUpFlag.value = 1;
       setTimeout(() => {
-        router.push('/login');
+        router.push('/');
       }, 3000);
     } else if (data.error?.[0] === '電子信箱 已被使用') {
       signUpFlag.value = 2;
