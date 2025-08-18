@@ -45,17 +45,6 @@ onMounted(() => {
   nickname.value = user ? user : '';
 });
 
-/**
- * 登出
- * @return {void}
- */
-const logout = () => {
-  // 清除 sessionStorage
-  sessionStorage.clear();
-  // 導向登入頁
-  router.push('/');
-}
-
 // Delete
 const deleteTodo = (item) => {
   deleteTodoMutate(
