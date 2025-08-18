@@ -1,5 +1,5 @@
 <script setup>
-import {provide, ref} from 'vue';
+import {ref} from 'vue';
 
 const todo = ref('');
 const emit = defineEmits(['add']);
@@ -10,7 +10,6 @@ const submit = () => {
     todo.value = '';
   }
 }
-provide('hello', 'hello world!')
 </script>
 
 <template>
