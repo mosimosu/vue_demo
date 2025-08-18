@@ -3,7 +3,7 @@ import {useMutation} from '@tanstack/vue-query';
 import {postToAPI, getToAPI, apiBatch} from '../apiV2';
 
 // Login hook
-export function useLogin(options = {}) {
+export const useLogin = (options = {}) => {
     return useMutation({
         mutationFn: (loginData) =>
             postToAPI({url: apiBatch.login, data: loginData}),
@@ -12,7 +12,7 @@ export function useLogin(options = {}) {
 }
 
 // SignUp hook
-export function useSignUp(options = {}) {
+export const useSignUp = (options = {}) => {
     return useMutation({
         mutationFn: (signUpData) =>
             postToAPI({url: apiBatch.signUp, data: signUpData}),
@@ -21,7 +21,7 @@ export function useSignUp(options = {}) {
 }
 
 // Check hook
-export function useCheck(options = {}) {
+export const useCheck = (options = {}) => {
     return useMutation({
         mutationFn: () => getToAPI(apiBatch.check),
         ...options,
