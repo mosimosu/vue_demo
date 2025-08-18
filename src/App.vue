@@ -1,13 +1,14 @@
 <script setup>
-import {ref, computed} from 'vue'
+import {computed} from 'vue'
 import {useRouter} from 'vue-router'
+import {useUserStore} from '@/stores';
 
 const router = useRouter()
-const nickname = ref(sessionStorage.getItem('user') || '')
-const isAuthenticated = computed(() => !!nickname.value)
+const userStore = useUserStore()
+const isAuthenticated = computed(() => !!userStore.nickname)
 
 const logout = () => {
-  sessionStorage.clear()
+  userStore.logout()
   router.push('/')
 }
 </script>
@@ -15,7 +16,7 @@ const logout = () => {
 <template>
   <v-app>
     <v-app-bar v-if="isAuthenticated" dark>
-      <v-toolbar-title>{{ nickname }}'s Todo List</v-toolbar-title>
+      <v-toolbar-title>{{ userStore.nickname }}'s Todo List</v-toolbar-title>
       <v-spacer/>
       <v-btn color="error" @click="logout" size="small">Logout</v-btn>
     </v-app-bar>
