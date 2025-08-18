@@ -4,8 +4,8 @@ import Login from '../pages/Login/index.vue'
 import Home from '../pages/Home/index.vue'
 
 const routes = [
-    {path: '/', component: Signup},
-    {path: '/login', component: Login},
+    {path: '/signup', component: Signup},
+    {path: '/', component: Login},
     {path: '/home', component: Home},
 ]
 
@@ -24,7 +24,7 @@ const isAuthenticated = () => {
 
 router.beforeEach((to, from, next) => {
     if (to.path === '/home' && !isAuthenticated()) {
-        next('/login')
+        next('/')
     } else {
         next()
     }
