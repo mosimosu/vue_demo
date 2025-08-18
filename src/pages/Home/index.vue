@@ -42,7 +42,7 @@ const setEditFlag = (id, value) => {
 // Sync nickname from sessionStorage
 onMounted(() => {
   const user = sessionStorage.getItem('user');
-  nickname.value = user ? JSON.parse(user) : '';
+  nickname.value = user ? user : '';
 });
 
 /**
