@@ -7,7 +7,7 @@ export const useUserStore = defineStore('user', {
     actions: {
         setNickname(name) {
             this.nickname = name
-            sessionStorage.setItem('user', JSON.stringify(name))
+            sessionStorage.setItem('user', name)
         },
         logout() {
             this.nickname = ''
