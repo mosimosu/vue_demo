@@ -4,7 +4,8 @@
  */
 import {ref} from 'vue';
 import {useRouter} from 'vue-router';
-import {useLogin} from '../../api/queries/login.js';
+import {useLogin} from '@/api/queries';
+import {useUserStore} from "../../stores";
 
 // 定義 router
 const router = useRouter();
@@ -22,6 +23,7 @@ const passwordInput = ref(null);
 const focusPassword = () => {
   passwordInput.value.focus();
 }
+const userStore = useUserStore()
 
 const {mutate: loginMutate} = useLogin({
   onSuccess: (res) => {
@@ -29,7 +31,7 @@ const {mutate: loginMutate} = useLogin({
     sessionStorage.setItem('token', token);
     const data = res.data;
     if (data.message === '登入成功') {
-      sessionStorage.setItem('user', JSON.stringify(data.nickname));
+      userStore.setNickname(data.nickname);
       router.push('/home');
     } else if (data.message === '登入失敗') {
       loginFail.value = true;
