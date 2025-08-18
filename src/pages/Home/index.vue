@@ -1,4 +1,5 @@
 <script setup>
+defineOptions({ name: 'HomePage' })
 /**
  * import function
  */
@@ -117,7 +118,7 @@ const handleSubmit = (content) => {
           @edit="editTodo"
           @delete="deleteTodo"
           @finish="finished"
-          @setEditFlag="setEditFlag"
+          @set-edit-flag="setEditFlag"
         />
       </v-col>
     </v-row>

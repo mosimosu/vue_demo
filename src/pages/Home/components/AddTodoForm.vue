@@ -16,7 +16,7 @@ const submit = () => {
   <v-form @submit.prevent="submit">
     <v-row align="center">
       <v-col>
-        <v-text-field label="Add a new todo" v-model="todo" outlined />
+        <v-text-field v-model="todo" label="Add a new todo" outlined />
       </v-col>
       <v-col cols="auto">
         <v-btn color="primary" type="submit">Add</v-btn>

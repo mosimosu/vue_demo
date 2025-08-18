@@ -18,7 +18,7 @@ const logout = () => {
     <v-app-bar v-if="isAuthenticated" dark>
       <v-toolbar-title>{{ userStore.nickname }}'s Todo List</v-toolbar-title>
       <v-spacer />
-      <v-btn color="error" @click="logout" size="small">Logout</v-btn>
+      <v-btn color="error" size="small" @click="logout">Logout</v-btn>
     </v-app-bar>
     <v-main>
       <router-view />

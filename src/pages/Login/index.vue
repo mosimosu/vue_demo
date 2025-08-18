@@ -1,4 +1,5 @@
 <script setup>
+defineOptions({ name: 'LoginPage' })
 /**
  * import function
  */
@@ -13,8 +14,6 @@ const router = useRouter()
 const email = ref('')
 // 密碼
 const password = ref('')
-// 定義 nickname
-const nickname = ref('')
 // 登入失敗 flag
 const loginFail = ref(false)
 // 定義 passwordInput
@@ -73,21 +72,21 @@ const goSignup = () => {
           <v-card-text>
             <v-form @submit.prevent="login">
               <v-text-field
-                label="Email"
+                id="email"
                 v-model="email"
-                @keyup.enter="focusPassword"
+                label="Email"
                 type="text"
                 name="email"
-                id="email"
+                @keyup.enter="focusPassword"
               />
               <v-text-field
-                label="Password"
-                v-model="password"
-                @keyup.enter="login"
-                type="password"
-                name="password"
                 id="password"
                 ref="passwordInput"
+                v-model="password"
+                label="Password"
+                type="password"
+                name="password"
+                @keyup.enter="login"
               />
               <v-spacer />
               <v-row align="center" justify="center">

@@ -34,17 +34,17 @@ defineEmits(['edit', 'delete', 'finish', 'setEditFlag'])
             <v-btn
               icon
               color="success"
-              @click="$emit('finish', item)"
               size="small"
               class="mr-1"
+              @click="$emit('finish', item)"
             >
               <v-icon>mdi-check</v-icon>
             </v-btn>
             <v-btn
               icon
               color="error"
-              @click="$emit('delete', item)"
               size="small"
+              @click="$emit('delete', item)"
             >
               <v-icon>mdi-delete</v-icon>
             </v-btn>
@@ -64,25 +64,25 @@ defineEmits(['edit', 'delete', 'finish', 'setEditFlag'])
           <v-text-field
             v-if="item.editFlag"
             v-model="item.content"
-            @keyup.enter="$emit('edit', item)"
-            @keyup.esc="$emit('setEditFlag', item.id, false)"
             outlined
             dense
+            @keyup.enter="$emit('edit', item)"
+            @keyup.esc="$emit('setEditFlag', item.id, false)"
           />
         </v-card-text>
         <v-card-actions>
           <v-btn
             v-if="!item.editFlag"
             color="info"
-            @click="$emit('setEditFlag', item.id, true)"
             size="small"
+            @click="$emit('setEditFlag', item.id, true)"
             >Edit</v-btn
           >
           <v-btn
             v-if="item.editFlag"
             color="primary"
-            @click="$emit('edit', item)"
             size="small"
+            @click="$emit('edit', item)"
             >Save</v-btn
           >
         </v-card-actions>

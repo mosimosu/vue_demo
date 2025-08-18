@@ -1,4 +1,5 @@
 <script setup>
+defineOptions({ name: 'SignUpPage' })
 /**
  * import function
  */
@@ -72,36 +73,36 @@ const goLogin = () => {
           <v-card-text>
             <v-form @submit.prevent="signUp">
               <v-text-field
-                label="Nickname"
-                v-model="nickname"
-                name="nickname"
                 id="nickname"
+                v-model="nickname"
+                label="Nickname"
+                name="nickname"
                 outlined
                 class="mb-3"
               />
               <v-text-field
-                label="Email"
-                v-model="email"
-                name="email"
                 id="email"
+                v-model="email"
+                label="Email"
+                name="email"
                 type="email"
                 outlined
                 class="mb-3"
               />
               <v-text-field
-                label="Password"
-                v-model="password"
-                name="password"
                 id="password"
+                v-model="password"
+                label="Password"
+                name="password"
                 type="password"
                 outlined
                 class="mb-3"
               />
               <v-text-field
-                label="Password Check"
-                v-model="passwordCheck"
-                name="passwordCheck"
                 id="passwordCheck"
+                v-model="passwordCheck"
+                label="Password Check"
+                name="passwordCheck"
                 type="password"
                 outlined
                 class="mb-3"
