@@ -1,82 +1,3 @@
-<template>
-  <v-container class="fill-height">
-    <v-row align="center" justify="center">
-      <v-col cols="12" sm="=12" md="8" lg="8" xl="8">
-        <v-card>
-          <v-card-title>
-            <span class="text-h5">Sign Up</span>
-          </v-card-title>
-          <v-card-text>
-            <v-form @submit.prevent="signUp">
-              <v-text-field
-                  label="Nickname"
-                  v-model="nickname"
-                  name="nickname"
-                  id="nickname"
-                  outlined
-                  class="mb-3"
-              />
-              <v-text-field
-                  label="Email"
-                  v-model="email"
-                  name="email"
-                  id="email"
-                  type="email"
-                  outlined
-                  class="mb-3"
-              />
-              <v-text-field
-                  label="Password"
-                  v-model="password"
-                  name="password"
-                  id="password"
-                  type="password"
-                  outlined
-                  class="mb-3"
-              />
-              <v-text-field
-                  label="Password Check"
-                  v-model="passwordCheck"
-                  name="passwordCheck"
-                  id="passwordCheck"
-                  type="password"
-                  outlined
-                  class="mb-3"
-                  @keyup.enter="signUp"
-              />
-              <v-btn color="primary" type="submit" block>Sign Up</v-btn>
-            </v-form>
-            <v-alert
-                v-show="signUpFlag === 2"
-                type="error"
-                dismissible
-                class="mt-3"
-            >
-              Your email is already registered. Please try again.
-            </v-alert>
-            <v-alert
-                v-show="signUpFlag === 1"
-                type="success"
-                dismissible
-                class="mt-3"
-            >
-              Registration successful. Redirecting to user page...
-            </v-alert>
-            <v-alert
-                v-show="passwordMismatch"
-                type="error"
-                dismissible
-                class="mt-3"
-            >
-              Your passwords do not match. Please try again.
-            </v-alert>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
-</template>
-
 <script setup>
 /**
  * import function
@@ -135,8 +56,97 @@ const signUp = () => {
   });
 };
 
+const goLogin = () => {
+  router.push('/');
+}
+
 </script>
 
+<template>
+  <v-container class="fill-height">
+    <v-row align="center" justify="center">
+      <v-col cols="12" sm="=12" md="8" lg="8" xl="8">
+        <v-card>
+          <v-card-title>
+            <span class="text-h5">Sign Up</span>
+          </v-card-title>
+          <v-card-text>
+            <v-form @submit.prevent="signUp">
+              <v-text-field
+                  label="Nickname"
+                  v-model="nickname"
+                  name="nickname"
+                  id="nickname"
+                  outlined
+                  class="mb-3"
+              />
+              <v-text-field
+                  label="Email"
+                  v-model="email"
+                  name="email"
+                  id="email"
+                  type="email"
+                  outlined
+                  class="mb-3"
+              />
+              <v-text-field
+                  label="Password"
+                  v-model="password"
+                  name="password"
+                  id="password"
+                  type="password"
+                  outlined
+                  class="mb-3"
+              />
+              <v-text-field
+                  label="Password Check"
+                  v-model="passwordCheck"
+                  name="passwordCheck"
+                  id="passwordCheck"
+                  type="password"
+                  outlined
+                  class="mb-3"
+                  @keyup.enter="signUp"
+              />
+              <v-row justify="center" align="center">
+                <v-col cols="auto">
+                  <v-btn color="primary" type="submit" block>Sign Up</v-btn>
+                </v-col>
+                <v-col cols="auto">
+                  <v-btn color="primary" @click="goLogin">Back to Login</v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
+            <v-alert
+                v-show="signUpFlag === 2"
+                type="error"
+                dismissible
+                class="mt-3"
+            >
+              Your email is already registered. Please try again.
+            </v-alert>
+            <v-alert
+                v-show="signUpFlag === 1"
+                type="success"
+                dismissible
+                class="mt-3"
+            >
+              Registration successful. Redirecting to user page...
+            </v-alert>
+            <v-alert
+                v-show="passwordMismatch"
+                type="error"
+                dismissible
+                class="mt-3"
+            >
+              Your passwords do not match. Please try again.
+            </v-alert>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
 
 <style scoped>
 
