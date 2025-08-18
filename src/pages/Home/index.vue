@@ -123,14 +123,6 @@ const handleSubmit = (content) => {
     <v-row justify="center" class="w-100">
       <v-col cols="12" md="12" lg="12" xl="12">
         <v-card class="mb-6">
-          <v-card-title>
-            <v-row align="center" justify="space-between" class="w-100 pa-4">
-              <span class="text-h5">{{ nickname }}'s Todo List</span>
-              <v-btn color="error" @click="logout" size="small">Logout</v-btn>
-            </v-row>
-          </v-card-title>
-        </v-card>
-        <v-card class="mb-6">
           <v-card-text>
             <AddTodoForm @add="handleSubmit"/>
           </v-card-text>
