@@ -48,7 +48,7 @@
  */
 import {ref} from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useLogin } from '../api/queries/login';
+import { useLogin } from '../../api/queries/login.js';
 // import {apiBatch, getToAPI, postToAPI} from '../api/apiV1.js';
 
 // 定義 router

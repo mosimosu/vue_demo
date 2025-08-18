@@ -83,7 +83,7 @@
  */
 import {ref} from 'vue';
 import {useRouter} from 'vue-router';
-import {useSignUp} from '../api/queries/login';
+import {useSignUp} from '../../api/queries/login.js';
 
 /**
  * 定義變數
