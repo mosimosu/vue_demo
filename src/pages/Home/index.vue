@@ -12,77 +12,16 @@
         </v-card>
         <v-card class="mb-6">
           <v-card-text>
-            <v-form @submit.prevent="handleSubmit">
-              <v-row align="center">
-                <v-col>
-                  <v-text-field
-                      label="Add a new todo"
-                      v-model="todo"
-                      outlined
-                  />
-                </v-col>
-                <v-col cols="auto">
-                  <v-btn color="primary" type="submit">Add</v-btn>
-                </v-col>
-              </v-row>
-            </v-form>
+            <AddTodoForm @add="handleSubmit"/>
           </v-card-text>
         </v-card>
-        <v-row>
-          <v-col
-              v-for="(item, index) in todosWithEdit"
-              :key="item.id"
-              cols="12"
-              sm="6"
-              md="6"
-              lg="4"
-          >
-            <v-card>
-              <v-card-title class="pa-6">
-                <v-row align="center">
-                  <span>Item <span style="color: red; font-weight: bold">{{ index + 1 }}</span></span>
-                  <span v-if="item.completed_at" class="ml-2">
-  <v-chip color="success" size="small" label>Finished</v-chip>
-</span>
-                  <v-spacer/>
-                  <v-btn icon color="success" @click="() => finished(item)" size="small" class="mr-1">
-                    <v-icon>mdi-check</v-icon>
-                  </v-btn>
-                  <v-btn icon color="error" @click="() => deleteTodo(item)" size="small">
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
-                </v-row>
-              </v-card-title>
-              <v-card-text>
-                <div v-if="!item.editFlag" :style="item.completed_at ? 'text-decoration: line-through; color: #888;' : ''">{{ item.content }}</div>
-                <v-text-field
-                    v-if="item.editFlag"
-                    v-model="item.content"
-                    @keyup.enter="() => editTodo(item)"
-                    @keyup.esc="setEditFlag(item.id, false)"
-                    outlined
-                    dense
-                />
-              </v-card-text>
-              <v-card-actions>
-                <v-btn
-                    v-if="!item.editFlag"
-                    color="info"
-                    @click="() => setEditFlag(item.id, true)"
-                    size="small"
-                >Edit
-                </v-btn>
-                <v-btn
-                    v-if="item.editFlag"
-                    color="primary"
-                    @click="() => editTodo(item)"
-                    size="small"
-                >Save
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
+        <TodoList
+            :todos="todosWithEdit"
+            @edit="editTodo"
+            @delete="deleteTodo"
+            @finish="finished"
+            @setEditFlag="setEditFlag"
+        />
       </v-col>
     </v-row>
   </v-container>
@@ -95,6 +34,8 @@
 import {ref, onMounted, computed} from "vue";
 import {useRouter} from "vue-router";
 import {useTodos, useAddTodo, useEditTodo, useDeleteTodo, useToggleTodo} from "../../api/queries/todos.js";
+import TodoList from './components/TodoList.vue';
+import AddTodoForm from './components/AddTodoForm.vue';
 
 // 定義 router
 const router = useRouter();
@@ -194,20 +135,14 @@ const finished = (item) => {
 };
 
 // Add
-const handleSubmit = () => {
-  addTodoMutate(
-      {content: todo.value},
-      {
-        onSuccess: () => {
-          todo.value = '';
-          refetchTodos();
-        },
-        onError: (err) => {
-          alert('Unauthorized, please login again');
-          setTimeout(() => router.push('/login'), 3000);
-        }
-      }
-  );
+const handleSubmit = (content) => {
+  addTodoMutate({ content }, {
+    onSuccess: () => refetchTodos(),
+    onError: () => {
+      alert('Unauthorized, please login again');
+      setTimeout(() => router.push('/login'), 3000);
+    }
+  });
 };
 
 
