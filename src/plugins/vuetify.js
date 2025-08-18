@@ -10,9 +10,9 @@ import * as directives from 'vuetify/directives'
 import { createVuetify } from 'vuetify'
 
 export default createVuetify({
-    // theme: {
-    //   defaultTheme: 'dark'
-    // },
-    components,
-    directives,
+  // theme: {
+  //   defaultTheme: 'dark'
+  // },
+  components,
+  directives,
 })

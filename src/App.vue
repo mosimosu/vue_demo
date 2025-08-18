@@ -1,7 +1,7 @@
 <script setup>
-import {computed} from 'vue'
-import {useRouter} from 'vue-router'
-import {useUserStore} from '@/stores';
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -17,11 +17,11 @@ const logout = () => {
   <v-app>
     <v-app-bar v-if="isAuthenticated" dark>
       <v-toolbar-title>{{ userStore.nickname }}'s Todo List</v-toolbar-title>
-      <v-spacer/>
+      <v-spacer />
       <v-btn color="error" @click="logout" size="small">Logout</v-btn>
     </v-app-bar>
     <v-main>
-      <router-view/>
+      <router-view />
     </v-main>
   </v-app>
 </template>

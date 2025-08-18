@@ -45,12 +45,15 @@ npm run dev
 ```
 
 ## Environment Variables
+
 This project uses environment variables for API endpoints and keys.
 Sensitive values are not included in the repository.
 Copy .env.example to .env:
-```bash 
+
+```bash
 cp .env.example .env
 ```
+
 ---
 
 This project is for learning and experimenting with Vue 3 ecosystem libraries and best practices.
