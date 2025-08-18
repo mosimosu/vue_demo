@@ -3,7 +3,7 @@ import {useQuery, useMutation, useQueryClient} from '@tanstack/vue-query';
 import {getToAPI, postToAPI, putToAPI, patchToAPI, deleteToAPI, apiBatch} from '../apiV2';
 
 // Fetch todos
-export function useTodos(options = {}) {
+export const useTodos = (options = {}) => {
     return useQuery({
         queryKey: ['todos'],
         queryFn: () => getToAPI(apiBatch.getTodos).then(res => res.data),
@@ -12,7 +12,7 @@ export function useTodos(options = {}) {
 }
 
 // Add
-export function useAddTodo(options = {}) {
+export const useAddTodo = (options = {}) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (newTodo) => postToAPI({url: apiBatch.postTodos, data: {todo: newTodo}}),
@@ -22,7 +22,7 @@ export function useAddTodo(options = {}) {
 }
 
 // Edit
-export function useEditTodo(options = {}) {
+export const useEditTodo = (options = {}) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (todo) => putToAPI({url: apiBatch.postTodos, data: {id: todo.id, todo: {content: todo.content}}}),
@@ -32,7 +32,7 @@ export function useEditTodo(options = {}) {
 }
 
 // Delete
-export function useDeleteTodo(options = {}) {
+export const useDeleteTodo = (options = {}) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (todo) => deleteToAPI({url: apiBatch.deleteTodos, data: {id: todo.id}}),
@@ -42,7 +42,7 @@ export function useDeleteTodo(options = {}) {
 }
 
 // Toggle/finish
-export function useToggleTodo(options = {}) {
+export const useToggleTodo = (options = {}) => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (todo) => patchToAPI({url: apiBatch.postTodos, data: {id: todo.id}}),
