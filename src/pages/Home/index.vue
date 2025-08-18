@@ -4,7 +4,7 @@
  */
 import {ref, onMounted, computed} from "vue";
 import {useRouter} from "vue-router";
-import {useTodos, useAddTodo, useEditTodo, useDeleteTodo, useToggleTodo} from "../../api/queries/todos.js";
+import {useTodos, useAddTodo, useEditTodo, useDeleteTodo, useToggleTodo} from "@/api/queries";
 import TodoList from './components/TodoList.vue';
 import AddTodoForm from './components/AddTodoForm.vue';
 

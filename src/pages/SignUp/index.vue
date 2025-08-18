@@ -4,7 +4,7 @@
  */
 import {ref} from 'vue';
 import {useRouter} from 'vue-router';
-import {useSignUp} from '../../api/queries/login.js';
+import {useSignUp} from '@/api/queries';
 
 /**
  * 定義變數
