@@ -3,63 +3,18 @@ defineOptions({ name: 'SignUpPage' })
 /**
  * import function
  */
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useSignUp } from '@/api/queries'
+import { useSignUpForm } from './composables/useSignUpForm'
 
-/**
- * 定義變數
- */
-// 路由
-const router = useRouter()
-// 使用者信箱
-const email = ref('')
-// 使用者密碼
-const password = ref('')
-// 使用者密碼確認
-const passwordCheck = ref('')
-// 使用者暱稱
-const nickname = ref('')
-// 註冊狀態
-const signUpFlag = ref(null)
-// 密碼不一致
-const passwordMismatch = ref(false)
-
-const { mutate: signUpMutate } = useSignUp({
-  onSuccess: (res) => {
-    const data = res.data
-    if (data.message === '註冊成功') {
-      signUpFlag.value = 1
-      setTimeout(() => {
-        router.push('/')
-      }, 3000)
-    } else if (data.error?.[0] === '電子信箱 已被使用') {
-      signUpFlag.value = 2
-    }
-  },
-  onError: () => {
-    signUpFlag.value = 2
-  },
-})
-
-const signUp = () => {
-  if (password.value !== passwordCheck.value) {
-    passwordMismatch.value = true
-    return
-  }
-  passwordMismatch.value = false
-  signUpMutate({
-    user: {
-      nickname: nickname.value,
-      email: email.value,
-      password: password.value,
-    },
-  })
-}
-
-const goLogin = () => {
-  router.push('/')
-}
+const {
+  email,
+  password,
+  passwordCheck,
+  nickname,
+  signUpFlag,
+  passwordMismatch,
+  signUp,
+  goLogin,
+} = useSignUpForm()
 </script>
 
 <template>
