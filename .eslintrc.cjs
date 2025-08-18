@@ -4,11 +4,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: [
-    'eslint:recommended',
-    'plugin:vue/vue3-recommended',
-    'prettier',
-  ],
+  extends: ['eslint:recommended', 'plugin:vue/vue3-recommended', 'prettier'],
   parserOptions: {
     ecmaVersion: 2021,
     sourceType: 'module',
@@ -20,11 +16,5 @@ module.exports = {
     'vue/no-unused-components': 'warn',
     'vue/no-unused-properties': 'warn',
   },
-  ignorePatterns: [
-    'node_modules/',
-    'dist/',
-    'build/',
-    'public/',
-    '*.min.js',
-  ],
+  ignorePatterns: ['node_modules/', 'dist/', 'build/', 'public/', '*.min.js'],
 }
