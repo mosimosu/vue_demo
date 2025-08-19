@@ -1,6 +1,13 @@
-# vue_demo
+# Vue Practice Project
 
-A Vue 3 demo project for practicing modern frontend development.
+## Introduction
+
+A Vue 3 demo project for practicing modern frontend development. A very simple todo list app.
+Therefore, it doesn't have advanced UI features only basic functionality. See below for details on what has been implemented.
+
+## Live Demo
+
+<https://vue-practice-project-eight.vercel.app/>
 
 ## Features
 
@@ -54,6 +61,13 @@ Copy .env.example to .env:
 cp .env.example .env
 ```
 
+## Build & Deploy
+
+```bash
+npm run build
+# 部署到 Vercel 請參考 https://vercel.com/docs
+```
+
 ---
 
-This project is for learning and experimenting with Vue 3 ecosystem libraries and best practices.
+This project is for learning and experimenting with Vue 3 ecosystem libraries and best practices. The APIs is provided by hexSchool.
